@@ -1,4 +1,5 @@
 import scipy.io
+import numpy as np
 
 def dfnc_analysis_info(infile):
     mat = scipy.io.loadmat(infile)
@@ -7,22 +8,24 @@ def dfnc_analysis_info(infile):
     nsubs = len(mat['dfncInfo']['outputFiles'][0][0][0])
     return comp_nums, ncomps, nsubs
     
-def dfnc_dyn_stats(infile):
-    mat = scipy.io.loadmat(infile)
-    fnc_dyn = mat['FNCdyn']
-    dyn_mean = fnc_dyn.mean(axis=0)
-    dyn_std = fnc_dyn.std(axis=0)
-    return dyn_mean, dyn_std
 
-def dfnc_spectra_stats(infile):
+def get_dfnc_data(infile, measure, stat):
     mat = scipy.io.loadmat(infile)
-    spectra_fnc = mat['spectra_fnc']
-    spectra_mean = spectra_fnc.mean(axis=0)
-    spectra_std = spectra_fnc.std(axis=0)
-    return spectra_mean, spectra_std
+    measure_mat = mat[measure]
+    measure_stat = stat(measure_mat, axis=0)
+    return measaure_stat
     
+        
 def fnctb_stats(infile):
     mat = scipy.io.loadmat(infile)
     fnc_corr = mat['adCorrAbs'][:,:,0]
     fnc_lag = mat['adCorrAbs'][:,:,1]
     return fnc_corr, fnc_lag
+    
+def square_from_combos(array1D, nnodes):
+    square_mat = np.zeros((nnodes,nnodes))
+    indices = list(itertools.combinations(range(nnodes), 2))
+    for i in range(len(array1D)):
+        square_mat[indices[i]] = array1D[i]
+    return square_mat + square_mat.T
+
