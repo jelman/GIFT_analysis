@@ -15,7 +15,7 @@ dfnc_stats = {'mean':np.mean, 'std':np.std}
 modeldir = '/home/jagust/rsfmri_ica/GIFT/models'
 des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM.mat')
 con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM.con')
-dfnc_data_file = os.path.join(datadir, 'dFNC_corr_std.csv')
+dfnc_data_file = os.path.join(datadir, 'dFNC_corr_z_mean.csv')
 ##############################################################
 
 #Get analysis info numbers
@@ -37,18 +37,24 @@ for measure_name in dfnc_measures.keys():
             subfile = sub_matfiles[i]
             sub_data = gift.get_dfnc_data(subfile, measure, stat_func)
             allsub_array[i] = sub_data
-            outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
+        outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
+        outfile = os.path.join(datadir, outname)
+        np.savetxt(outfile, allsub_array, delimiter='\t')
+        if measure_name == 'corr':
+            allsub_array_z = np.arctanh(allsub_array)
+            outname = '_'.join(['dFNC', measure_name, 'z', stat_name]) + '.csv'
             outfile = os.path.join(datadir, outname)
-            np.savetxt(outfile, allsub_array, delimiter='\t')
+            np.savetxt(outfile, allsub_array, delimiter='\t')            
 
 ## Run group analysis with randomise
 ####################################
 exists, resultsdir = gift.make_dir(datadir,
                                     'randomise') 
 dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
-dfnc_img_fname = os.path.join(resultsdir, 'dFNC_std_4D.nii.gz')
+pth, fname, ext = gift.split_filename(dfnc_data_file)
+dfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
 dfnc_saveimg = gift.save_img(dfnc_data, dfnc_img_fname)
-rand_basename = os.path.join(resultsdir, 'dFNC_std')
+rand_basename = os.path.join(resultsdir, fname)
 p_uncorr_list, p_corr_list = gift.randomise(dfnc_saveimg, 
                                             rand_basename, 
                                             des_file, 
