@@ -1,28 +1,9 @@
-import scipy.io
-import os
+import os, sys
+sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis')
+import gift_output as gift
 from glob import glob
 import numpy as np
 
-def analysis_info(infile):
-    mat = scipy.io.loadmat(infile)
-    comp_nums = mat['dfncInfo']['comps'][0][0][0]
-    ncomps = len(comp_nums)
-    nsubs = len(mat['dfncInfo']['outputFiles'][0][0][0])
-    return comp_nums, ncomps, nsubs
-    
-def get_dyn_summary(infile):
-    mat = scipy.io.loadmat(infile)
-    fnc_dyn = mat['FNCdyn']
-    dyn_mean = fnc_dyn.mean(axis=0)
-    dyn_std = fnc_dyn.std(axis=0)
-    return dyn_mean, dyn_std
-
-def get_spectra_summary(infile):
-    mat = scipy.io.loadmat(infile)
-    spectra_fnc = mat['spectra_fnc']
-    spectra_mean = spectra_fnc.mean(axis=0)
-    spectra_std = spectra_fnc.std(axis=0)
-    return spectra_mean, spectra_std
     
 #### Set parameters############
 datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d40/dFNC'
@@ -36,12 +17,13 @@ spectra_std_out = 'dFNC_spectra_std.csv'
 
 #Get analysis info  numbers
 info_file = os.path.join(datadir, dfnc_info)
-comp_nums, ncomps, nsubs = analysis_info(info_file)
+comp_nums, ncomps, nsubs = gift.dfnc_analysis_info(info_file)
 features = (ncomps*(ncomps-1))/2
 
 # Get list of subject mat files
 sub_matfiles = glob(os.path.join(datadir, globstr))
-# Create empty array
+
+# Create empty arrays
 allsub_dyn_mean = np.zeros((nsubs, features))
 allsub_spectra_mean = np.zeros((nsubs, features))
 allsub_dyn_std = np.zeros((nsubs, features))
@@ -49,8 +31,8 @@ allsub_spectra_std = np.zeros((nsubs, features))
 
 for i in range(len(sub_matfiles)):
     subfile = sub_matfiles[i]
-    sub_dyn_mean, sub_dyn_std = get_dyn_summary(subfile)
-    sub_spectra_mean, sub_spectra_std = get_spectra_summary(subfile)
+    sub_dyn_mean, sub_dyn_std = gift.dfnc_dyn_stats(subfile)
+    sub_spectra_mean, sub_spectra_std = gift.dfnc_spectra_stats(subfile)
     allsub_dyn_mean[i]=sub_dyn_mean   
     allsub_spectra_mean[i]=sub_spectra_mean
     allsub_dyn_std[i]=sub_dyn_std   
