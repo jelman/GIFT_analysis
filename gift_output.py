@@ -1,4 +1,6 @@
 import scipy.io
+import os, sys
+from glob import glob
 import numpy as np
 from nipype.interfaces.base import CommandLine
 import nibabel as nib
@@ -177,17 +179,50 @@ def get_results(randomise_outputs):
         outfile = os.path.join(pth, fname + '.txt')
         np.savetxt(outfile, 
                     data_pval, 
-                    fmt='%1.3f', 
+                    fmt='%1.5f', 
                     delimiter='\t')  
         print('p value matrix saved to %s'%(outfile))
         conname = ''.join(['contrast', str(i+1)])
         results[conname] = data_pval
     return results
-            
+
+
 def square_from_combos(array1D, nnodes):
     square_mat = np.zeros((nnodes,nnodes))
     indices = list(itertools.combinations(range(nnodes), 2))
     for i in range(len(array1D)):
         square_mat[indices[i]] = array1D[i]
     return square_mat + square_mat.T
-
+    
+    
+def multi_correct(data, meth='fdr_bh'):
+    """
+    Run fdr correction on nodes of interest contained in an array of p values. 
+    
+    Parameters:
+    -----------
+    data : numpy array
+        nnodes x nnodes array containing p values of correlation between each node
+    noi_idx : numpy
+        indices (applicable to both row and column) of nodes of interest. This
+        reduces the number of nodes corrected for
+    meth : str
+        Method of correction. Options are: 
+            `bonferroni` : one-step correction
+            `sidak` : on-step correction
+            `holm-sidak` :
+            `holm` :
+            `simes-hochberg` :
+            `hommel` :
+            `fdr_bh` : Benjamini/Hochberg (default)
+            `fdr_by` : Benjamini/Yekutieli 
+    
+    Returns:
+    ----------
+    fdr_corrected : numpy array
+        array containing p values corrected with fdr
+    """
+    rej, corrp, alpha_sidak, alpha_bonnf = smm.multipletests(data, 
+                                                            alpha=0.05, 
+                                                            method=meth)
+    return corrp
