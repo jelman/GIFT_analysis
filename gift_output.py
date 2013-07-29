@@ -16,12 +16,17 @@ def dfnc_analysis_info(infile):
     return comp_nums, ncomps, nsubs
     
 
-def get_dfnc_data(infile, measure, stat):
+def get_dfnc_data(infile, measure):
     mat = scipy.io.loadmat(infile)
     measure_mat = mat[measure]
-    measure_stat = stat(measure_mat, axis=0)
-    return measure_stat
+    if measure == 'FNCdyn':
+        measure_mat = np.arctanh(measure_mat)
+    return measure_mat
     
+    
+def get_dfnc_stat(data, stat_func):
+    sub_stat = stat_func(data, axis=0)
+    return sub_stat
 
 def fnctb_stats(infile):
     mat = scipy.io.loadmat(infile)
@@ -135,7 +140,7 @@ def randomise(infile, outname, design_file, contrast_file):
                     '-o %s'%(outname),
                     '-d %s'%(design_file),
                     '-t %s'%(contrast_file),
-                    '-x -n 5000'])
+                    '-D -x -n 5000'])
     cout = CommandLine(cmd).run()
     if not cout.runtime.returncode == 0:
         print cout.runtime.stderr

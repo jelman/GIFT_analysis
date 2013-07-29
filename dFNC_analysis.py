@@ -9,13 +9,13 @@ import numpy as np
 datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/dFNC'
 dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
-nnodes = 18
+nnodes = 11
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
 dfnc_stats = {'mean':np.mean, 'std':np.std}
 modeldir = '/home/jagust/rsfmri_ica/GIFT/models'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM.con')
-dfnc_data_file = os.path.join(datadir, 'dFNC_corr_z_mean.csv')
+des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
+con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
+dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
 ##############################################################
 
 #Get analysis info numbers
@@ -35,16 +35,13 @@ for measure_name in dfnc_measures.keys():
         allsub_array = np.zeros((nsubs, features))
         for i in range(len(sub_matfiles)):
             subfile = sub_matfiles[i]
-            sub_data = gift.get_dfnc_data(subfile, measure, stat_func)
-            allsub_array[i] = sub_data
+            sub_data = gift.get_dfnc_data(subfile, measure_field)
+            sub_stat = gift.get_dfnc_stat(sub_data, stat_func)
+            allsub_array[i] = sub_stat
         outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
         outfile = os.path.join(datadir, outname)
         np.savetxt(outfile, allsub_array, delimiter='\t')
-        if measure_name == 'corr':
-            allsub_array_z = np.arctanh(allsub_array)
-            outname = '_'.join(['dFNC', measure_name, 'z', stat_name]) + '.csv'
-            outfile = os.path.join(datadir, outname)
-            np.savetxt(outfile, allsub_array, delimiter='\t')            
+        
 
 ## Run group analysis with randomise
 ####################################
