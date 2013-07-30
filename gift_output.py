@@ -19,8 +19,6 @@ def dfnc_analysis_info(infile):
 def get_dfnc_data(infile, measure):
     mat = scipy.io.loadmat(infile)
     measure_mat = mat[measure]
-    if measure == 'FNCdyn':
-        measure_mat = np.arctanh(measure_mat)
     return measure_mat
     
     
@@ -31,8 +29,9 @@ def get_dfnc_stat(data, stat_func):
 def fnctb_stats(infile):
     mat = scipy.io.loadmat(infile)
     fnc_corr = mat['adCorrAbs'][:,:,0]
+    fnc_corr_z = np.arctanh(fnc_corr)
     fnc_lag = mat['adCorrAbs'][:,:,1]
-    return fnc_corr, fnc_lag
+    return fnc_corr, fnc_corr_z, fnc_lag
 
 
 def make_dir(root, name = 'temp'):
