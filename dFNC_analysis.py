@@ -20,7 +20,7 @@ dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
 
 #Get analysis info numbers
 info_file = os.path.join(datadir, dfnc_info)
-comp_nums, ncomps, nsubs = gift.dfnc_analysis_info(info_file)
+comp_nums, ncomps, nsubs, freq = gift.dfnc_analysis_info(info_file)
 features = (ncomps*(ncomps-1))/2
 
 # Get list of subject mat files
@@ -34,19 +34,21 @@ for measure_name in dfnc_measures.keys():
         stat_func = dfnc_stats[stat_name]
         allsub_array = np.zeros((nsubs, features))
         for i in range(len(sub_matfiles)):
+        ### CUT OFF SPECTRAL ANALYSIS AT <0.25HZ ###
             subfile = sub_matfiles[i]
             sub_data = gift.get_dfnc_data(subfile, measure_field)
+            if measure_name == 'spectra':
+                sub_data = sub_data[freq<0.025,:]
             sub_stat = gift.get_dfnc_stat(sub_data, stat_func)
             allsub_array[i] = sub_stat
         outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
         outfile = os.path.join(datadir, outname)
-        np.savetxt(outfile, allsub_array, delimiter='\t')
+        np.savetxt(outfile, allsub_array, fmt='%1.5f', delimiter='\t')
         
 
 ## Run group analysis with randomise
 ####################################
-exists, resultsdir = gift.make_dir(datadir,
-                                    'randomise') 
+exists, resultsdir = gift.make_dir(datadir,'randomise') 
 resultsglob = os.path.join(datadir, 'dFNC_*.csv')
 result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
