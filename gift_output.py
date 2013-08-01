@@ -13,20 +13,22 @@ def dfnc_analysis_info(infile):
     comp_nums = mat['dfncInfo']['comps'][0][0][0]
     ncomps = len(comp_nums)
     nsubs = len(mat['dfncInfo']['outputFiles'][0][0][0])
-    return comp_nums, ncomps, nsubs
+    freq = mat['dfncInfo']['freq'][0][0][0]
+    return comp_nums, ncomps, nsubs, freq
     
 
 def get_dfnc_data(infile, measure):
     mat = scipy.io.loadmat(infile)
     measure_mat = mat[measure]
     return measure_mat
-    
+
     
 def get_dfnc_stat(data, stat_func):
     sub_stat = stat_func(data, axis=0)
     return sub_stat
+    
 
-def fnctb_stats(infile):
+def get_fnctb_stats(infile):
     mat = scipy.io.loadmat(infile)
     fnc_corr = mat['adCorrAbs'][:,:,0]
     fnc_corr_z = np.arctanh(fnc_corr)
@@ -34,6 +36,11 @@ def fnctb_stats(infile):
     return fnc_corr, fnc_corr_z, fnc_lag
 
 
+def get_mfnc_stats(infile):
+    mat = scipy.io.loadmat(infile) 
+    mfnc_zcorr = mat['fnc_corrs']
+    return mfnc_zcorr
+    
 def make_dir(root, name = 'temp'):
     """ generate dirname string
     check if directory exists
