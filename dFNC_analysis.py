@@ -1,18 +1,20 @@
 import os, sys
 sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis')
-import gift_output as gift
+import gift_output as go
+import gift_analysis as ga
+import gift_utils as gu
 from glob import glob
 import numpy as np
 
     
 ####################### Set parameters################
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/dFNC'
+datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/dFNC'
 dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
-nnodes = 11
+nnodes = 10
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
 dfnc_stats = {'mean':np.mean, 'std':np.std}
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models'
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models_Old'
 des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
 con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
 dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
@@ -20,7 +22,7 @@ dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
 
 #Get analysis info numbers
 info_file = os.path.join(datadir, dfnc_info)
-comp_nums, ncomps, nsubs, freq = gift.dfnc_analysis_info(info_file)
+comp_nums, ncomps, nsubs, freq = go.dfnc_analysis_info(info_file)
 features = (ncomps*(ncomps-1))/2
 
 # Get list of subject mat files
@@ -36,10 +38,10 @@ for measure_name in dfnc_measures.keys():
         for i in range(len(sub_matfiles)):
         ### CUT OFF SPECTRAL ANALYSIS AT <0.25HZ ###
             subfile = sub_matfiles[i]
-            sub_data = gift.get_dfnc_data(subfile, measure_field)
+            sub_data = go.get_dfnc_data(subfile, measure_field)
             if measure_name == 'spectra':
                 sub_data = sub_data[freq<0.025,:]
-            sub_stat = gift.get_dfnc_stat(sub_data, stat_func)
+            sub_stat = go.get_dfnc_stat(sub_data, stat_func)
             allsub_array[i] = sub_stat
         outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
         outfile = os.path.join(datadir, outname)
@@ -48,27 +50,27 @@ for measure_name in dfnc_measures.keys():
 
 ## Run group analysis with randomise
 ####################################
-exists, resultsdir = gift.make_dir(datadir,'randomise') 
+exists, resultsdir = gu.make_dir(datadir,'randomise') 
 resultsglob = os.path.join(datadir, 'dFNC_*.csv')
 result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
     dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
-    pth, fname, ext = gift.split_filename(dfnc_data_file)
+    pth, fname, ext = gu.split_filename(dfnc_data_file)
     dfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
-    dfnc_saveimg = gift.save_img(dfnc_data, dfnc_img_fname)
+    dfnc_saveimg = gu.save_img(dfnc_data, dfnc_img_fname)
     rand_basename = os.path.join(resultsdir, fname)
-    p_uncorr_list, p_corr_list = gift.randomise(dfnc_saveimg, 
+    p_uncorr_list, p_corr_list = ga.randomise(dfnc_saveimg, 
                                                 rand_basename, 
                                                 des_file, 
                                                 con_file)     
-    uncorr_results = gift.get_results(p_uncorr_list)
-    corr_results = gift.get_results(p_corr_list)
+    uncorr_results = ga.get_results(p_uncorr_list)
+    corr_results = ga.get_results(p_corr_list)
            
     fdr_results = {}
     for i in range(len(uncorr_results.keys())):
         conname = sorted(uncorr_results.keys())[i]
-        fdr_corr_arr = gift.multi_correct(uncorr_results[conname])
-        fdr_results[conname] = gift.square_from_combos(fdr_corr_arr, nnodes)
+        fdr_corr_arr = ga.multi_correct(uncorr_results[conname])
+        fdr_results[conname] = gu.square_from_combos(fdr_corr_arr, nnodes)
         
         outfile = os.path.join(resultsdir, 
                             ''.join([rand_basename, '_fdr_corrp_','tstat',str(i+1),'.txt']))
