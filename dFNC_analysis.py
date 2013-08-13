@@ -5,26 +5,25 @@ import gift_analysis as ga
 import gift_utils as gu
 from glob import glob
 import numpy as np
-
+import itertools
+import pandas as pd
     
 ####################### Set parameters################
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/dFNC'
+datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/dFNC'
 dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
-nnodes = 10
+nnodes = 11
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
 dfnc_stats = {'mean':np.mean, 'std':np.std}
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models_Old'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
-dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
+cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_All_log.csv'
+dfnc_data_file = os.path.join(datadir, 'dFNC_corr_mean.csv')
 ##############################################################
 
-#Get analysis info numbers
+#Get analysis info
 info_file = os.path.join(datadir, dfnc_info)
 comp_nums, ncomps, nsubs, freq = go.dfnc_analysis_info(info_file)
 features = (ncomps*(ncomps-1))/2
-
+combos = gu.get_combo_names(comp_nums)
 # Get list of subject mat files
 sub_matfiles = glob(os.path.join(datadir, globstr))
 
@@ -36,11 +35,10 @@ for measure_name in dfnc_measures.keys():
         stat_func = dfnc_stats[stat_name]
         allsub_array = np.zeros((nsubs, features))
         for i in range(len(sub_matfiles)):
-        ### CUT OFF SPECTRAL ANALYSIS AT <0.25HZ ###
             subfile = sub_matfiles[i]
             sub_data = go.get_dfnc_data(subfile, measure_field)
             if measure_name == 'spectra':
-                sub_data = sub_data[freq<0.025,:]
+                sub_data = sub_data[freq<0.025,:] # Only analyse freqs <0.025
             sub_stat = go.get_dfnc_stat(sub_data, stat_func)
             allsub_array[i] = sub_stat
         outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
@@ -50,30 +48,39 @@ for measure_name in dfnc_measures.keys():
 
 ## Run group analysis with randomise
 ####################################
-exists, resultsdir = gu.make_dir(datadir,'randomise') 
+"""
+To do:
+Run OLS (model and fit in one line?) and RLM for each comparison
+Append p value and t-stat to 1D arrays
+Correct for multiple comparisons
+Create square matrices containing outputs
+"""
+
+exists, resultsdir = gu.make_dir(datadir,'results') 
+# Create empty dataframe to hold results of group analysis
+results_frame = pd.DataFrame(data=None, 
+                            index=combos, 
+                            columns=['OLS_pval','OLS_tscore', 'RLM_pval', 'RLM_tscore'])
+# Load design file and prepend a constant
+X = ga.load_design(cov_file)
+# Find results of all dfnc analyses and loop over each 
 resultsglob = os.path.join(datadir, 'dFNC_*.csv')
 result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
-    dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
-    pth, fname, ext = gu.split_filename(dfnc_data_file)
-    dfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
-    dfnc_saveimg = gu.save_img(dfnc_data, dfnc_img_fname)
-    rand_basename = os.path.join(resultsdir, fname)
-    p_uncorr_list, p_corr_list = ga.randomise(dfnc_saveimg, 
-                                                rand_basename, 
-                                                des_file, 
-                                                con_file)     
-    uncorr_results = ga.get_results(p_uncorr_list)
-    corr_results = ga.get_results(p_corr_list)
-           
-    fdr_results = {}
-    for i in range(len(uncorr_results.keys())):
-        conname = sorted(uncorr_results.keys())[i]
-        fdr_corr_arr = ga.multi_correct(uncorr_results[conname])
-        fdr_results[conname] = gu.square_from_combos(fdr_corr_arr, nnodes)
+    dfnc_data = pd.read_csv(dfnc_data_file, delimiter='\t', names=combos)
+    # Loop over each combination of ICs and run group analysis using specified model
+    for comparison in dfnc_data.columns
+        y = dfnc_data[comparison]
+        ols_results = ga.run_ols(y, X)
         
-        outfile = os.path.join(resultsdir, 
-                            ''.join([rand_basename, '_fdr_corrp_','tstat',str(i+1),'.txt']))
+        
+
+        #rlm_model = sm.RLM(y[:,0], x, M=sm.robust.norms.TukeyBiweight())
+        #rlm_results = rlm_model.fit()
+        #print rlm_results.summary()
+    
+    
+    
         # Save results to file
         np.savetxt(outfile, 
                     fdr_results[conname], 

@@ -7,7 +7,22 @@ from nipype.interfaces.base import CommandLine
 import nibabel as nib
 import statsmodels.stats.multitest as smm
 import statsmodels.api as sm
+import pandas as pd
 
+def load_design(design_file, pattern = 'B[0-9]{2}-[0-9]{3}'):
+    X = pd.read_csv(design_file, delimiter='\t')
+    for col in X.columns:
+        if X[col].dtype == 'object':
+            if X[col].str.contains(pattern).values.any():
+                X = X.drop([col], axis=1)
+    X = sm.add_constant(X, prepend=True)
+    return X
+
+def run_ols(y, X):    
+        ols_model = sm.OLS(y, X)
+        ols_results = ols_model.fit()
+        return ols_results
+        
 def randomise(infile, outname, design_file, contrast_file):   
     """
     Runs fsl randomise and returns list of outputs

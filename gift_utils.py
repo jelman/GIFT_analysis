@@ -79,7 +79,10 @@ def save_img(data, fname):
     img.to_filename(fname)
     return fname
     
-
+def get_combo_names(comp_nums):
+    combos = list(itertools.combinations(comp_nums, 2))
+    combo_names = ['ic'+str(a)+'ic'+str(b) for a, b in combos]
+    return combo_names
 
 
 def square_from_combos(array1D, nnodes):
