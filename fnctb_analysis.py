@@ -20,9 +20,8 @@ if __name__ == '__main__':
 
 
     ##### Set parameters ############
-    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/FNCtb'
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/FNCtb'
     fnctb_info = 'GraphAndData.mat'
-    nnodes = 11
     fnc_corr_out = 'FNCtb_corr.csv'
     fnc_corr_z_out = 'FNCtb_corr_z.csv'
     fnc_lag_out = 'FNCtb_lag.csv'
