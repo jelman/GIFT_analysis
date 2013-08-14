@@ -5,7 +5,6 @@ import gift_utils
 import numpy as np
 from nipype.interfaces.base import CommandLine
 import nibabel as nib
-import statsmodels.stats.multitest as smm
 import statsmodels.api as sm
 import pandas as pd
 
