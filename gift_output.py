@@ -26,16 +26,19 @@ def get_dfnc_stat(data, stat_func):
 
 def get_fnctb_stats(infile):
     mat = scipy.io.loadmat(infile)
+    comp_nums = mat['gFnc']['anSelComp'][0][0]
+    comp_nums = comp_nums.reshape((-1,))
     fnc_corr = mat['adCorrAbs'][:,:,0]
     fnc_corr_z = np.arctanh(fnc_corr)
     fnc_lag = mat['adCorrAbs'][:,:,1]
-    return fnc_corr, fnc_corr_z, fnc_lag
+    return comp_nums, fnc_corr, fnc_corr_z, fnc_lag
 
 
 def get_mfnc_stats(infile):
     mat = scipy.io.loadmat(infile) 
+    comp_nums = mat['comp_number'][0]
     mfnc_zcorr = mat['fnc_corrs']
-    return mfnc_zcorr
+    return comp_nums, mfnc_zcorr
     
 
 

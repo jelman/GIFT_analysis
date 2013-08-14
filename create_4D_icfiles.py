@@ -16,7 +16,7 @@ if __name__ == '__main__':
     ###### Set paths and patterns #########    
     basedir = args
     outdir = os.path.join(basedir, 'ic_files')
-    subic_globstr = os.path.join(basedir, '*sub*_component_ica_s1_.nii') # search string for sub ic files
+    gift_globstr = os.path.join(basedir, '*sub*_component_ica_s1_.nii') # search string for sub ic files
     ic4d_globstr = os.path.join(outdir, 'dr_stage2_ic*_4D.nii.gz')
     subid_pattern = u'sub[0-9]{3}'
     #######################################
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         raise OSError('%s exists, remove to re-run'%outdir)
 
     # Split files of each subject containing all ic's
-    infiles = glob(subic_globstr)
+    infiles = glob(gift_globstr)
     for subfile in infiles:
         subid = pydr.get_subid(subfile, pattern=subid_pattern)
         allic = pydr.split_components(subfile, subid, outdir)

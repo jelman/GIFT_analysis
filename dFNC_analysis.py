@@ -28,7 +28,6 @@ if __name__ == '__main__':
     dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
     dfnc_stats = {'mean':np.mean, 'std':np.std}
     cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_All_log.csv'
-    dfnc_data_file = os.path.join(datadir, 'dFNC_corr_mean.csv')
     ##############################################################
 
     #Get analysis info
