@@ -69,15 +69,16 @@ result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
     dfnc_data = pd.read_csv(dfnc_data_file, delimiter='\t', names=combos)
     # Loop over each combination of ICs and run group analysis using specified model
-    for comparison in dfnc_data.columns
+    for comparison in dfnc_data.columns:
         y = dfnc_data[comparison]
         ols_results = ga.run_ols(y, X)
-        
-        
+        results_frame.ix[comparison]['OLS_pval'] = ols_results.pvalues['PIB_Index']
+        results_frame.ix[comparison]['OLS_tscore'] = ols_results.tvalues['PIB_Index']
+        rlm_results = ga.run_rlm(y, X)
+        results_frame.ix[comparison]['RLM_pval'] = rlm_results.pvalues['PIB_Index']
+        results_frame.ix[comparison]['RLM_tscore'] = rlm_results.tvalues['PIB_Index']
 
-        #rlm_model = sm.RLM(y[:,0], x, M=sm.robust.norms.TukeyBiweight())
-        #rlm_results = rlm_model.fit()
-        #print rlm_results.summary()
+
     
     
     
