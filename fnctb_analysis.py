@@ -5,6 +5,15 @@ import gift_analysis as ga
 import gift_utils as gu
 from glob import glob
 import numpy as np
+import itertools
+import pandas as pd
+import statsmodels.stats.multitest as smm
+
+"""
+Takes output of FNCtb analysis from GIFT toolbox and runs group stats (both OLS 
+and robust linear model) using a specified design matrix. Writes file containing 
+raw p-values, corrected p-valuesand t-scores of each pairwise comparison. 
+"""
 
 ##### Set parameters ############
 datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/FNCtb'
@@ -13,9 +22,7 @@ nnodes = 11
 fnc_corr_out = 'FNCtb_corr.csv'
 fnc_corr_z_out = 'FNCtb_corr_z.csv'
 fnc_lag_out = 'FNCtb_lag.csv'
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
+cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_All_log.csv'
 ################################
 
 
@@ -23,8 +30,8 @@ con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
 #####################################
 # Set output of FNC toolbox as infile
 infile = os.path.join(datadir, fnctb_info)
-# Get correlation and lag matrices
-fnc_corr, fnc_corr_z, fnc_lag = go.get_fnctb_stats(infile)
+# Get selected components numbers, correlation and lag matrices
+comp_nums, fnc_corr, fnc_corr_z, fnc_lag = go.get_fnctb_stats(infile)
 # Save out text files of correlation and lags
 fnc_corr_outfile = os.path.join(datadir, fnc_corr_out)
 np.savetxt(fnc_corr_outfile, fnc_corr, fmt='%1.5f', delimiter='\t')
@@ -33,9 +40,9 @@ np.savetxt(fnc_corr_z_outfile, fnc_corr_z, fmt='%1.5f', delimiter='\t')
 fnc_lag_outfile = os.path.join(datadir, fnc_lag_out)
 np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter='\t')
 
-## Run group analysis
-#######################
-exists, resultsdir = gu.make_dir(datadir,'randomise') 
+## Run group analysis with statsmodels modules
+##############################################
+exists, resultsdir = gu.make_dir(datadir,'results') 
 resultsglob = os.path.join(datadir, 'FNCtb_*.csv')
 result_files = glob(resultsglob)
 for fnc_data_file in result_files:
