@@ -5,57 +5,79 @@ import gift_analysis as ga
 import gift_utils as gu
 from glob import glob
 import numpy as np
+import itertools
+import pandas as pd
+import statsmodels.stats.multitest as smm
 
-##### Set parameters ############
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/Mancovan/fnc_stats'
-mfnc_info = 'rsfmri_mancovan_results_fnc.mat'
-nnodes = 10
-mfnc_zcorr_out = 'mfnc_zcorr.csv'
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models_Old'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
-################################
+"""
+Takes output of mancovan FNC analysis from GIFT toolbox and runs group stats (both OLS 
+and robust linear model) using a specified design matrix. Writes file containing 
+raw p-values, corrected p-valuesand t-scores of each pairwise comparison. 
+"""
+
+if __name__ == '__main__':
 
 
-## Get data from FNC toolbox output
-#####################################
-# Set output of FNC toolbox as infile
-infile = os.path.join(datadir, mfnc_info)
-# Get correlation and lag matrices
-mfnc_zcorr = go.get_mfnc_stats(infile)
-# Save out text files of correlation and lags
-mfnc_zcorr_outfile = os.path.join(datadir, mfnc_zcorr_out)
-np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr, fmt='%1.5f', delimiter='\t')
+    ##### Set parameters ############
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/Mancovan/fnc_stats'
+    mfnc_info = 'rsfmri_mancovan_results_fnc.mat'
+    nnodes = 11
+    mfnc_zcorr_out = 'mfnc_zcorr.csv'
+    cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_All_log.csv'
+    ################################
 
-## Run group analysis
-#######################
-exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, 'mfnc_zcorr.csv')
-result_files = glob(resultsglob)
-for mfnc_data_file in result_files:
-    mfnc_data = np.genfromtxt(mfnc_data_file, names=None, dtype=float, delimiter=None)
-    pth, fname, ext = gu.split_filename(mfnc_data_file)
-    mfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
-    mfnc_saveimg = gu.save_img(mfnc_data, mfnc_img_fname)
-    rand_basename = os.path.join(resultsdir, fname)
-    p_uncorr_list, p_corr_list = ga.randomise(mfnc_saveimg, 
-                                                rand_basename, 
-                                                des_file, 
-                                                con_file)     
-    uncorr_results = ga.get_results(p_uncorr_list)
-    corr_results = ga.get_results(p_corr_list)
-           
-    fdr_results = {}
-    for i in range(len(uncorr_results.keys())):
-        conname = sorted(uncorr_results.keys())[i]
-        fdr_corr_arr = ga.multi_correct(uncorr_results[conname])
-        fdr_results[conname] = gu.square_from_combos(fdr_corr_arr, nnodes)
+
+    ## Get data from FNC toolbox output
+    #####################################
+    # Set output of FNC toolbox as infile
+    infile = os.path.join(datadir, mfnc_info)
+    # Get selected component numbers and correlation and matrix
+    comp_nums, mfnc_zcorr = go.get_mfnc_stats(infile)
+    combos = gu.get_combo_names(comp_nums)
+    # Save out text files of correlation and lags
+    mfnc_zcorr_outfile = os.path.join(datadir, mfnc_zcorr_out)
+    np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr, fmt='%1.5f', delimiter='\t')
+
+
+
+    ## Run group analysis with statsmodels modules
+    ##############################################
+    # Make results directory
+    exists, resultsdir = gu.make_dir(datadir,'results') 
+    # Create empty dataframe to hold results of group analysis
+    results_frame = pd.DataFrame(data=None, 
+                                index=combos, 
+                                columns=['OLS_pval','OLS_corrp','OLS_tscore',
+                                        'RLM_pval','RLM_corrp','RLM_tscore'])
+    # Load design file and prepend a constant
+    X = ga.load_design(cov_file)
+    # Find results of all mfnc analyses and loop over each 
+    resultsglob = os.path.join(datadir, mfnc_zcorr_out)
+    mfnc_data_file = glob(resultsglob)[0]
+
+
+    mfnc_data = pd.read_csv(mfnc_data_file, delimiter='\t', names=combos)
+    # Loop over each combination of ICs and run group analysis using specified model
+    for comparison in mfnc_data.columns:
+        y = mfnc_data[comparison] # select pairwise comparison as dependent var
+        # Run OLS and append results
+        ols_results = ga.run_ols(y, X)
+        results_frame.ix[comparison]['OLS_pval'] = ols_results.pvalues['PIB_Index']
+        results_frame.ix[comparison]['OLS_tscore'] = ols_results.tvalues['PIB_Index']
+        # Run robust stats and append results
+        rlm_results = ga.run_rlm(y, X)
+        results_frame.ix[comparison]['RLM_pval'] = rlm_results.pvalues['PIB_Index']
+        results_frame.ix[comparison]['RLM_tscore'] = rlm_results.tvalues['PIB_Index']
         
-        outfile = os.path.join(resultsdir, 
-                            ''.join([rand_basename, '_fdr_corrp_','tstat',str(i+1),'.txt']))
-        # Save results to file
-        np.savetxt(outfile, 
-                    fdr_results[conname], 
-                    fmt='%1.5f', 
-                    delimiter='\t')  
-        print('Saved corrected output to %s'%(outfile))  
+    # Get corrected p values
+    _,results_frame['OLS_corrp'],_,_ = smm.multipletests(results_frame.OLS_pval,
+                                                                        method='fdr_bh')
+    _,results_frame['RLM_corrp'],_,_ = smm.multipletests(results_frame.RLM_pval,
+                                                                        method='fdr_bh')
+
+    # Save results to file
+    pth, fname, ext = gu.split_filename(mfnc_data_file)
+    new_fname = '_'.join([fname, 'results'])
+    outfile = os.path.join(resultsdir, new_fname + ext)
+    results_frame.to_csv(outfile, sep='\t', header=True, index=True)
+    print('Saved corrected output to %s'%(outfile)) 
