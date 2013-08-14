@@ -23,6 +23,12 @@ def run_ols(y, X):
         ols_results = ols_model.fit()
         return ols_results
         
+def run_rlm(y, X, norm = sm.robust.norms.TukeyBiweight()):
+        rlm_model = sm.RLM(y, X, M = norm)
+        rlm_results = rlm_model.fit()
+        return rlm_results
+
+        
 def randomise(infile, outname, design_file, contrast_file):   
     """
     Runs fsl randomise and returns list of outputs
