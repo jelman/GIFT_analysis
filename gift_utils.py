@@ -8,7 +8,7 @@ def add_squares(dat):
 
 def glm(X,Y):
     """ a simple GLM function returning the estimated parameters and residuals """
-    betah   =  lin.pinv(X).dot(Y)
+    betah   =  np.linalg.pinv(X).dot(Y)
     Yfitted =  X.dot(betah)
     resid   =  Y - Yfitted
     return betah, Yfitted, resid
