@@ -37,7 +37,8 @@ def load_mcpars(datadir, subid):
 
 def main(icadir, datadir, tc_glob):
     tc_files = glob(os.path.join(icadir,tc_glob))
-    backup_data(datadir, tc_files)  
+    backup_data(datadir, tc_files)
+    subid_map = utils.load_mapping(os.path.join(icadir, 'subid_mapping.txt'))
     for subid in sorted(subid_map.keys()):
         subnum = subid_map[subid]
         subtc_file = find_sub_file(subnum, tc_files)
