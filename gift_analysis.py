@@ -8,6 +8,7 @@ import nibabel as nib
 import statsmodels.api as sm
 import pandas as pd
 
+
 def load_design(design_file, pattern = 'B[0-9]{2}-[0-9]{3}'):
     X = pd.read_csv(design_file, delimiter='\t')
     for col in X.columns:
