@@ -2,6 +2,29 @@ import os, sys
 from glob import glob
 import nibabel as nib
 import itertools
+from scipy import linalg as lin
+
+
+def add_squares(dat):
+    return np.hstack((dat, dat**2))
+
+def glm(X,Y):
+    """ a simple GLM function returning the estimated parameters and residuals """
+    betah   =  lin.pinv(X).dot(Y)
+    Yfitted =  X.dot(betah)
+    resid   =  Y - Yfitted
+    return betah, Yfitted, resid
+    
+def load_nii(filename):
+    img = nib.load(filename)
+    dat = img.get_data()
+    hdr = img.get_header()
+    return dat, hdr
+    
+def save_nii(outfile, data, hdr):
+    img = nib.Nifti1Image(data, hdr)
+    img.to_filename(outfile)
+    return outfile
 
 def make_dir(root, name = 'temp'):
     """ generate dirname string
@@ -9,12 +32,18 @@ def make_dir(root, name = 'temp'):
     return exists, dir_string
     """
     outdir = os.path.join(root, name)
-    exists = False
-    if os.path.isdir(outdir):
-        exists = True
+    if os.path.isdir(outdir)==False:
+        os.mkdir(outdir)  
+        return outdir    
     else:
+        #If outdir exists, rename existing outdirdir with timestamp appended
+        mtime = os.path.getmtime(outdir)
+        tmestamp = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d_%H-%M-%S')
+        newdir = '_'.join([outdir,tmestamp])
+        os.rename(outdir,newdir)
         os.mkdir(outdir)
-    return exists, outdir
+        print outdir, 'exists, moving to ', newdir
+        return newdir
 
 
 def split_filename(fname):
