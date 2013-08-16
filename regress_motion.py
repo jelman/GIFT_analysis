@@ -19,7 +19,7 @@ def backup_data(datadir, filelist):
         except:
             raise IOError('%s not copies'%src)
             
-def find_sub_file(subid, filelist):
+def find_sub_file(subnum, filelist):
     """
     returns file of a specified subject contained in a list of files
     """    
