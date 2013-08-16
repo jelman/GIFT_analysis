@@ -1,5 +1,6 @@
 import os, sys
-sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis', '/home/jagust/jelman/CODE/misc')
+sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis')
+sys.path.insert(0, '/home/jagust/jelman/CODE/misc')
 import general_utilities as utils
 import gift_output as go
 import gift_analysis as ga
