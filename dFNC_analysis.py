@@ -1,5 +1,6 @@
 import os, sys
-sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis')
+sys.path.insert(0, '/home/jagust/jelman/CODE/GIFT_analysis', '/home/jagust/jelman/CODE/misc')
+import general_utilities as utils
 import gift_output as go
 import gift_analysis as ga
 import gift_utils as gu
@@ -21,7 +22,7 @@ if __name__ == '__main__':
 
   
     ####################### Set parameters################
-    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/dFNC'
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/dFNC'
     dfnc_info = 'rsfmri_dfnc.mat'
     globstr = '*_results.mat'
     dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     ##############################################
 
     # Make results directory
-    exists, resultsdir = gu.make_dir(datadir,'results') 
+    resultsdir = utils.make_dir(datadir,'results') 
     # Create empty dataframe to hold results of group analysis
     results_frame = pd.DataFrame(data=None, 
                                 index=combos, 
@@ -93,7 +94,7 @@ if __name__ == '__main__':
                                                                             method='fdr_bh')
         
         # Save results to file
-        pth, fname, ext = gu.split_filename(dfnc_data_file)
+        pth, fname, ext = utils.split_filename(dfnc_data_file)
         new_fname = '_'.join([fname, 'results'])
         outfile = os.path.join(resultsdir, new_fname + ext)
         results_frame.to_csv(outfile, sep='\t', header=True, index=True)
