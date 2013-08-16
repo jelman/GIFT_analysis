@@ -5,6 +5,7 @@ sys.path.insert(0, '/home/jagust/jelman/CODE/misc')
 import general_utilities as utils
 import gift_utils as gu
 from glob import glob
+import numpy as np
 
 
 def backup_data(datadir, filelist):
@@ -46,7 +47,7 @@ def main(icadir, datadir, tc_glob):
         sub_mcpars = load_mcpars(datadir, subid)
         sub_mcpars_full = gu.add_squares(sub_mcpars)
         betah, Yfitted, resid = gu.glm(sub_mcpars_full, subtc_dat)
-        subtc_cleaned = save_nii(subtc_file, resid, subtc_aff)
+        subtc_cleaned = utils.save_nii(subtc_file, resid, subtc_aff)
         
 if __name__ == '__main__':
     
