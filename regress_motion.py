@@ -20,13 +20,23 @@ def backup_data(datadir, filelist):
 def find_sub_file(subid, filelist):
     subfile = [x for x in filelist if subnum in x]
     return subfile[0]    
-    
+
+def load_mcpars(datadir, subid):
+    subdir = os.path.join(datadir, '_'.join([subid, 'Preproc.feat']))
+    mcpar_file = os.path.join(subdir, 'mc', 'prefiltered_func_data_mcf.par')
+    mcpars = np.loadtxt(mcpar_file)
+    return mcpars
+
+
 def main(icadir, datadir, tc_glob):
     tc_files = glob(os.path.join(icadir,tc_glob))
     backup_data(datadir, tc_files)  
     for subid in sorted(subid_map.keys()):
         subnum = subid_map[subid]
-        subtc = find_sub_file(subnum, tc_files)
+        subtc_file = find_sub_file(subnum, tc_files)
+        subtc_dat, subtc_aff = utils.load_nii(sub_tc_file)
+        sub_mcpars = load_mcpars(datadir, subid)
+        sub_mcpars_full = gu.add_squares(sub_mcpars)
     
 if __name__ == '__main__':
     
@@ -34,7 +44,6 @@ if __name__ == '__main__':
     icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30'
     datadir = '/home/jagust/rsfmri_ica/GIFT/data'
     tc_glob = '*_sub*_timecourses_ica_s1_.nii'
-    
     ################################
     
     
