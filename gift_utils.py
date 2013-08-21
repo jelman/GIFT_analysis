@@ -2,6 +2,7 @@ import os, sys
 from glob import glob
 import nibabel as nib
 import itertools
+import numpy as np
 
 def make_dir(root, name = 'temp'):
     """ generate dirname string
