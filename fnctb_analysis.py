@@ -22,12 +22,12 @@ if __name__ == '__main__':
 
 
     ##### Set parameters ############
-    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/FNCtb'
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/FNCtb'
     fnctb_info = 'GraphAndData.mat'
     fnc_corr_out = 'FNCtb_corr.csv'
     fnc_corr_z_out = 'FNCtb_corr_z.csv'
     fnc_lag_out = 'FNCtb_lag.csv'
-    cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_Old_log.csv'
+    cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_Log_YoungOld_residGM_Age.csv'
     ################################
 
 

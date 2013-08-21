@@ -21,10 +21,10 @@ if __name__ == '__main__':
 
 
     ##### Set parameters ############
-    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/Mancovan/fnc_stats'
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/Mancovan/fnc_stats'
     mfnc_info = 'rsfmri_mancovan_results_fnc.mat'
     mfnc_zcorr_out = 'mfnc_zcorr.csv'
-    cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_Old_log.csv'
+    cov_file = '/home/jagust/rsfmri_ica/Spreadsheets/Covariates/Subject_Covariate_Log_YoungOld_residGM_Age.csv'
     ################################
 
 

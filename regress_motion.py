@@ -43,7 +43,7 @@ def main(icadir, datadir, tc_glob):
     for subid in sorted(subid_map.keys()):
         subnum = subid_map[subid]
         subtc_file = find_sub_file(subnum, tc_files)
-        subtc_dat, subtc_aff = utils.load_nii(sub_tc_file)
+        subtc_dat, subtc_aff = utils.load_nii(subtc_file)
         sub_mcpars = load_mcpars(datadir, subid)
         sub_mcpars_full = gu.add_squares(sub_mcpars)
         betah, Yfitted, resid = gu.glm(sub_mcpars_full, subtc_dat)
@@ -52,7 +52,7 @@ def main(icadir, datadir, tc_glob):
 if __name__ == '__main__':
     
     ##### Set parameters ##########
-    icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30' # Directory containing ica output
+    icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d75' # Directory containing ica output
     datadir = '/home/jagust/rsfmri_ica/GIFT/data' # Directory containing pre-processed data
     tc_glob = '*_sub*_timecourses_ica_s1_.nii' # File name pattern to search for tc files
     ################################
