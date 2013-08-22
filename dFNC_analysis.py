@@ -8,15 +8,15 @@ import numpy as np
 
     
 ####################### Set parameters################
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/dFNC'
+datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/dFNC'
 dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
-nnodes = 10
+nnodes = 17
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
 dfnc_stats = {'mean':np.mean, 'std':np.std}
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models_Old'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models/YoungOld'
+des_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.mat')
+con_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.con')
 dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
 ##############################################################
 

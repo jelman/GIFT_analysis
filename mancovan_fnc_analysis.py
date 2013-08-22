@@ -7,13 +7,13 @@ from glob import glob
 import numpy as np
 
 ##### Set parameters ############
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d30/Mancovan/fnc_stats'
+datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/Mancovan/fnc_stats'
 mfnc_info = 'rsfmri_mancovan_results_fnc.mat'
-nnodes = 10
+nnodes = 17
 mfnc_zcorr_out = 'mfnc_zcorr.csv'
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models_Old'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models/YoungOld'
+des_file = os.path.join(modeldir, 'Covariate_YoungOld_Age_Scanner_ResidGM.mat')
+con_file = os.path.join(modeldir, 'Covariate_YoungOld_Age_Scanner_ResidGM.con')
 ################################
 
 

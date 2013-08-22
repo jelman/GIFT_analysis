@@ -7,15 +7,15 @@ from glob import glob
 import numpy as np
 
 ##### Set parameters ############
-datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d30/FNCtb'
+datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/FNCtb'
 fnctb_info = 'GraphAndData.mat'
-nnodes = 11
+nnodes = 17
 fnc_corr_out = 'FNCtb_corr.csv'
 fnc_corr_z_out = 'FNCtb_corr_z.csv'
 fnc_lag_out = 'FNCtb_lag.csv'
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models'
-des_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.mat')
-con_file = os.path.join(modeldir, 'PIB_Age_Scanner_Motion_GM_log.con')
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models/YoungOld'
+des_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.mat')
+con_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.con')
 ################################
 
 
