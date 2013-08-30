@@ -13,11 +13,16 @@ dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
 nnodes = 17
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
-dfnc_stats = {'mean':np.mean, 'std':np.std}
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models/YoungOld'
-des_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.mat')
-con_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.con')
-dfnc_data_file = os.path.join(datadir, 'dFNC_spectra_mean.csv')
+dfnc_stats = {'mean':np.mean, 'median':np.median, 'std':np.std}
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models/Old'
+des_file = os.path.join(modeldir, 'Covariate_Old_Age_Scanner_MaskGM_Motion.mat')
+con_file = os.path.join(modeldir, 'Covariate_Old_Age_Scanner_MaskGM_Motion.con')
+subset = [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 37, 41, 42,
+       43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+       60, 61, 62, 63, 64, 65, 66, 67, 69, 71, 72, 73, 74, 75, 76, 77, 79,
+       81, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95]
+sub_name = 'Old'
 ##############################################################
 
 #Get analysis info numbers
@@ -43,15 +48,22 @@ for measure_name in dfnc_measures.keys():
                 sub_data = sub_data[freq<0.025,:]
             sub_stat = go.get_dfnc_stat(sub_data, stat_func)
             allsub_array[i] = sub_stat
+        # Save all subjects
         outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
         outfile = os.path.join(datadir, outname)
         np.savetxt(outfile, allsub_array, fmt='%1.5f', delimiter='\t')
+        # Save only subset of subjects
+        subset_array = allsub_array[subset,:]
+        outname = '_'.join(['dFNC', measure_name, stat_name, sub_name]) + '.csv'
+        outfile = os.path.join(datadir, outname)
+        np.savetxt(outfile, subset_array, fmt='%1.5f', delimiter='\t')
+        
         
 
 ## Run group analysis with randomise
 ####################################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, 'dFNC_*.csv')
+resultsglob = os.path.join(datadir, ''.join(['dFNC_','*',sub_name,'.csv']))
 result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
     dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
