@@ -36,7 +36,7 @@ np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter='\t')
 ## Run group analysis
 #######################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, 'FNCtb_*.csv')
+resultsglob = os.path.join(datadir, 'FNCtb_*Old.csv')
 result_files = glob(resultsglob)
 for fnc_data_file in result_files:
     fnc_data = np.genfromtxt(fnc_data_file, names=None, dtype=float, delimiter=None)
