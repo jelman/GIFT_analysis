@@ -4,6 +4,18 @@ import nibabel as nib
 import itertools
 import numpy as np
 
+def add_squares(dat):
+    return np.hstack((dat, dat**2))
+
+
+def glm(X,Y):
+    """ a simple GLM function returning the estimated parameters and residuals """
+    betah = np.linalg.pinv(X).dot(Y)
+    Yfitted = X.dot(betah)
+    resid = Y - Yfitted
+    return betah, Yfitted, resid
+    
+    
 def make_dir(root, name = 'temp'):
     """ generate dirname string
     check if directory exists
@@ -81,7 +93,11 @@ def save_img(data, fname):
     return fname
     
 
-
+def get_combo_names(comp_nums):
+    combos = list(itertools.combinations(comp_nums, 2))
+    combo_names = ['ic'+str(a)+'ic'+str(b) for a, b in combos]
+    return combo_names
+    
 
 def square_from_combos(array1D, nnodes):
     square_mat = np.zeros((nnodes,nnodes))
