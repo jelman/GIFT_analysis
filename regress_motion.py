@@ -6,7 +6,7 @@ import general_utilities as utils
 import gift_utils as gu
 from glob import glob
 import numpy as np
-
+import scipy.io as sio
 
 def backup_data(datadir, filelist):
     """
@@ -30,7 +30,7 @@ def load_mcpars(datadir, subid):
     """
     load 6 column motion correction parameter file into numpy array
     """    
-    subdir = os.path.join(datadir, '_'.join([subid, 'Preproc.feat']))
+    subdir = os.path.join(datadir, subid, 'func', '_'.join([subid, '4d_OldYoungICA.ica']))
     mcpar_file = os.path.join(subdir, 'mc', 'prefiltered_func_data_mcf.par')
     mcpars = np.loadtxt(mcpar_file)
     return mcpars
@@ -40,7 +40,16 @@ def clean_timecourse(tc_file, mcpars):
     betah, Yfitted, resid = gu.glm(mcpars, tc_dat)
     tc_cleaned = utils.save_nii(tc_file, resid, tc_aff)
     return tc_cleaned
-
+    
+def clean_cmat(cmat_file, mcpars):
+    cmat = sio.loadmat(cmat_file)
+    tc = cmat['tc']
+    betah, Yfitted, resid = gu.glm(mcpars, tc)
+    cmat['tc'] = resid
+    cmat_cleaned = sio.savemat(cmat_file, cmat)
+    return cmat_cleaned
+    
+    
 def main(icadir, datadir, tc_fname, cmat_fname):
     tc_files = glob(os.path.join(icadir,tc_fname%('*')))
     cmat_files = glob(os.path.join(icadir,cmat_fname%('*')))
@@ -49,18 +58,20 @@ def main(icadir, datadir, tc_fname, cmat_fname):
     subid_map = utils.load_mapping(os.path.join(icadir, 'subid_mapping.txt'))
     for subid in sorted(subid_map.keys()):
         num = subid_map[subid]
-        subnum = ''.join(['sub','%03d'%num])
+        subnum = ''.join(['sub','%s'%num.zfill(3)])
         sub_mcpars = load_mcpars(datadir, subid)
         sub_mcpars_full = gu.add_squares(sub_mcpars)
         subtc_file = os.path.join(icadir, tc_fname%(subnum))
         subtc_clean = clean_timecourse(subtc_file, sub_mcpars_full)
+        subcmat_file = os.path.join(icadir, cmat_fname%(num))
+        subcmat_clean = clean_cmat(subcmat_file, sub_mcpars_full)
 
         
 if __name__ == '__main__':
     
     ##### Set parameters ##########
     icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75' # Directory containing ica output
-    datadir = '/home/jagust/rsfmri_ica/GIFT/data' # Directory containing pre-processed data
+    datadir = '/home/jagust/rsfmri_ica/data' # Directory containing pre-processed data
     tc_fname = 'rsfmri_%s_timecourses_ica_s1_.nii' # File name pattern to search for tc files
     cmat_fname = 'rsfmri_ica_c%s-1.mat'
     ################################
