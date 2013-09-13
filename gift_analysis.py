@@ -37,7 +37,7 @@ def randomise(infile, outname, design_file, contrast_file):
                     '-o %s'%(outname),
                     '-d %s'%(design_file),
                     '-t %s'%(contrast_file),
-                    '-D -x -n 5000'])
+                    '-x -n 5000'])
     cout = CommandLine(cmd).run()
     if not cout.runtime.returncode == 0:
         print cout.runtime.stderr
