@@ -12,12 +12,12 @@ def backup_data(datadir, filelist):
     """
     back up all files in datadir matching pattern specified by globstr
     """
-    backupdir = utils.make_dir(icadir, 'tc_backup')
+    backupdir = utils.make_dir(icadir, 'backups')
     for src in filelist:
         try:
             shutil.copy(src,backupdir)
         except:
-            raise IOError('%s not copies'%src)
+            raise IOError('%s not copied'%src)
             
 def find_sub_file(subnum, filelist):
     """
@@ -35,32 +35,38 @@ def load_mcpars(datadir, subid):
     mcpars = np.loadtxt(mcpar_file)
     return mcpars
 
+def clean_timecourse(tc_file, mcpars):
+    tc_dat, tc_aff = utils.load_nii(tc_file)
+    betah, Yfitted, resid = gu.glm(mcpars, tc_dat)
+    tc_cleaned = utils.save_nii(tc_file, resid, tc_aff)
+    return tc_cleaned
 
-def main(icadir, datadir, tc_glob):
-    tc_files = glob(os.path.join(icadir,tc_glob))
+def main(icadir, datadir, tc_fname, cmat_fname):
+    tc_files = glob(os.path.join(icadir,tc_fname%('*')))
+    cmat_files = glob(os.path.join(icadir,cmat_fname%('*')))
     backup_data(datadir, tc_files)
+    backup_data(datadir, cmat_files)
     subid_map = utils.load_mapping(os.path.join(icadir, 'subid_mapping.txt'))
     for subid in sorted(subid_map.keys()):
         num = subid_map[subid]
         subnum = ''.join(['sub','%03d'%num])
-        subtc_file = find_sub_file(subnum, tc_files)
-        subtc_dat, subtc_aff = utils.load_nii(subtc_file)
         sub_mcpars = load_mcpars(datadir, subid)
         sub_mcpars_full = gu.add_squares(sub_mcpars)
-        betah, Yfitted, resid = gu.glm(sub_mcpars_full, subtc_dat)
-        subtc_cleaned = utils.save_nii(subtc_file, resid, subtc_aff)
+        subtc_file = os.path.join(icadir, tc_fname%(subnum))
+        subtc_clean = clean_timecourse(subtc_file, sub_mcpars_full)
+
         
 if __name__ == '__main__':
     
     ##### Set parameters ##########
     icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75' # Directory containing ica output
     datadir = '/home/jagust/rsfmri_ica/GIFT/data' # Directory containing pre-processed data
-    tc_glob = '*_sub*_timecourses_ica_s1_.nii' # File name pattern to search for tc files
-    cmat_glob = '*_ica_c*-*.mat'
+    tc_fname = 'rsfmri_%s_timecourses_ica_s1_.nii' # File name pattern to search for tc files
+    cmat_fname = 'rsfmri_ica_c%s-1.mat'
     ################################
     
     # Regress motion parameters out of component timecourses
-    main(icadir, datadir, tc_glob)
+    main(icadir, datadir, tc_fname, cmat_fname)
     
     
     
