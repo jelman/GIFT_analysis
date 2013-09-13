@@ -41,7 +41,8 @@ def main(icadir, datadir, tc_glob):
     backup_data(datadir, tc_files)
     subid_map = utils.load_mapping(os.path.join(icadir, 'subid_mapping.txt'))
     for subid in sorted(subid_map.keys()):
-        subnum = subid_map[subid]
+        num = subid_map[subid]
+        subnum = ''.join(['sub','%03d'%num])
         subtc_file = find_sub_file(subnum, tc_files)
         subtc_dat, subtc_aff = utils.load_nii(subtc_file)
         sub_mcpars = load_mcpars(datadir, subid)
@@ -52,9 +53,10 @@ def main(icadir, datadir, tc_glob):
 if __name__ == '__main__':
     
     ##### Set parameters ##########
-    icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_Old_d75' # Directory containing ica output
+    icadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75' # Directory containing ica output
     datadir = '/home/jagust/rsfmri_ica/GIFT/data' # Directory containing pre-processed data
     tc_glob = '*_sub*_timecourses_ica_s1_.nii' # File name pattern to search for tc files
+    cmat_glob = '*_ica_c*-*.mat'
     ################################
     
     # Regress motion parameters out of component timecourses
