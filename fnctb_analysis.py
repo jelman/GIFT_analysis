@@ -9,13 +9,19 @@ import numpy as np
 ##### Set parameters ############
 datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/FNCtb'
 fnctb_info = 'GraphAndData.mat'
-nnodes = 17
-fnc_corr_out = 'FNCtb_corr.csv'
-fnc_corr_z_out = 'FNCtb_corr_z.csv'
-fnc_lag_out = 'FNCtb_lag.csv'
-modeldir = '/home/jagust/rsfmri_ica/GIFT/models/YoungOld'
-des_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.mat')
-con_file = os.path.join(modeldir, 'Groups_YoungOld_Age_Scanner_ResidGM.con')
+nnodes = 23
+fnc_corr_out = 'FNCtb_corr'
+fnc_corr_z_out = 'FNCtb_corr_z'
+fnc_lag_out = 'FNCtb_lag'
+modeldir = '/home/jagust/rsfmri_ica/GIFT/models/Old'
+des_file = os.path.join(modeldir, 'Covariate_Old_log_demeaned.mat')
+con_file = os.path.join(modeldir, 'Covariate_Old_log_demeaned.con')
+subset = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 35, 39, 40, 41, 42, 43, 44, 45, 46, 
+        47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 
+        67, 68, 69, 70, 72, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 
+        89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107]
+group_name = 'Old'
 ################################
 
 
@@ -26,17 +32,24 @@ infile = os.path.join(datadir, fnctb_info)
 # Get correlation and lag matrices
 fnc_corr, fnc_corr_z, fnc_lag = go.get_fnctb_stats(infile)
 # Save out text files of correlation and lags
-fnc_corr_outfile = os.path.join(datadir, fnc_corr_out)
+fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'.csv']))
 np.savetxt(fnc_corr_outfile, fnc_corr, fmt='%1.5f', delimiter='\t')
-fnc_corr_z_outfile = os.path.join(datadir, fnc_corr_z_out)
+fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'.csv']))
 np.savetxt(fnc_corr_z_outfile, fnc_corr_z, fmt='%1.5f', delimiter='\t')
-fnc_lag_outfile = os.path.join(datadir, fnc_lag_out)
+fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'.csv']))
 np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter='\t')
+# Save out only subset group
+fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'_',group_name,'.csv']))
+np.savetxt(fnc_corr_outfile, fnc_corr[subset,:], fmt='%1.5f', delimiter='\t')
+fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'_',group_name,'.csv']))
+np.savetxt(fnc_corr_z_outfile, fnc_corr_z[subset,:], fmt='%1.5f', delimiter='\t')
+fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'_',group_name,'.csv']))
+np.savetxt(fnc_lag_outfile, fnc_lag[subset,:], fmt='%1.2f', delimiter='\t')
 
 ## Run group analysis
 #######################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, 'FNCtb_*Old.csv')
+resultsglob = os.path.join(datadir, ''.join(['FNCtb_','*',group_name,'.csv']))
 result_files = glob(resultsglob)
 for fnc_data_file in result_files:
     fnc_data = np.genfromtxt(fnc_data_file, names=None, dtype=float, delimiter=None)

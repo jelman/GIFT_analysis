@@ -11,18 +11,18 @@ import numpy as np
 datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/dFNC'
 dfnc_info = 'rsfmri_dfnc.mat'
 globstr = '*_results.mat'
-nnodes = 17
+nnodes = 23
 dfnc_measures = {'corr':'FNCdyn', 'spectra':'spectra_fnc'}
 dfnc_stats = {'mean':np.mean, 'median':np.median, 'std':np.std}
 modeldir = '/home/jagust/rsfmri_ica/GIFT/models/Old'
-des_file = os.path.join(modeldir, 'Covariate_Old_Age_Scanner_MaskGM_Motion.mat')
-con_file = os.path.join(modeldir, 'Covariate_Old_Age_Scanner_MaskGM_Motion.con')
-subset = [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 37, 41, 42,
-       43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-       60, 61, 62, 63, 64, 65, 66, 67, 69, 71, 72, 73, 74, 75, 76, 77, 79,
-       81, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95]
-sub_name = 'Old'
+des_file = os.path.join(modeldir, 'Covariate_Old_log_demeaned.mat')
+con_file = os.path.join(modeldir, 'Covariate_Old_log_demeaned.con')
+subset = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 35, 39, 40, 41, 42, 43, 44, 45, 46, 
+        47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 
+        67, 68, 69, 70, 72, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 
+        89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107]
+group_name = 'Old'
 ##############################################################
 
 #Get analysis info numbers
@@ -54,7 +54,7 @@ for measure_name in dfnc_measures.keys():
         np.savetxt(outfile, allsub_array, fmt='%1.5f', delimiter='\t')
         # Save only subset of subjects
         subset_array = allsub_array[subset,:]
-        outname = '_'.join(['dFNC', measure_name, stat_name, sub_name]) + '.csv'
+        outname = '_'.join(['dFNC', measure_name, stat_name, group_name]) + '.csv'
         outfile = os.path.join(datadir, outname)
         np.savetxt(outfile, subset_array, fmt='%1.5f', delimiter='\t')
         
@@ -63,7 +63,7 @@ for measure_name in dfnc_measures.keys():
 ## Run group analysis with randomise
 ####################################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, ''.join(['dFNC_','*',sub_name,'.csv']))
+resultsglob = os.path.join(datadir, ''.join(['dFNC_','*',group_name,'.csv']))
 result_files = glob(resultsglob)
 for dfnc_data_file in result_files:
     dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
