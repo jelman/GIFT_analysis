@@ -30,9 +30,9 @@ def main(data_files):
 
 if __name__ == '__main__':
 
-    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/dFNC'
+    datadir = '/home/jagust/rsfmri_ica/GIFT/GICA_d75/Mancovan/fnc_stats'
     outputdir = os.path.join(datadir, 'NBS')
-    globstr = 'dFNC*_Old.csv'
+    globstr = 'mfnc*_Old.csv'
     nnodes = 23
     data_files = glob(os.path.join(datadir, globstr))
     
