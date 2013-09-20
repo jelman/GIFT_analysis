@@ -39,17 +39,21 @@ np.savetxt(fnc_corr_z_outfile, fnc_corr_z, fmt='%1.5f', delimiter='\t')
 fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'.csv']))
 np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter='\t')
 # Save out only subset group
-fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'_',group_name,'.csv']))
-np.savetxt(fnc_corr_outfile, fnc_corr[subset,:], fmt='%1.5f', delimiter='\t')
-fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'_',group_name,'.csv']))
-np.savetxt(fnc_corr_z_outfile, fnc_corr_z[subset,:], fmt='%1.5f', delimiter='\t')
-fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'_',group_name,'.csv']))
-np.savetxt(fnc_lag_outfile, fnc_lag[subset,:], fmt='%1.2f', delimiter='\t')
+if subset:
+    fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'_',group_name,'.csv']))
+    np.savetxt(fnc_corr_outfile, fnc_corr[subset,:], fmt='%1.5f', delimiter='\t')
+    fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'_',group_name,'.csv']))
+    np.savetxt(fnc_corr_z_outfile, fnc_corr_z[subset,:], fmt='%1.5f', delimiter='\t')
+    fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'_',group_name,'.csv']))
+    np.savetxt(fnc_lag_outfile, fnc_lag[subset,:], fmt='%1.2f', delimiter='\t')
 
 ## Run group analysis
 #######################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, ''.join(['FNCtb_','*',group_name,'.csv']))
+if subset:
+    resultsglob = os.path.join(datadir, ''.join(['FNCtb_','*',group_name,'.csv']))
+else:
+    resultsglob = os.path.join(datadir, ''.join(['FNCtb_','*','.csv']))
 result_files = glob(resultsglob)
 for fnc_data_file in result_files:
     fnc_data = np.genfromtxt(fnc_data_file, names=None, dtype=float, delimiter=None)

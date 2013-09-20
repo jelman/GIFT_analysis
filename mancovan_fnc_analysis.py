@@ -33,13 +33,17 @@ mfnc_zcorr = go.get_mfnc_stats(infile)
 mfnc_zcorr_outfile = os.path.join(datadir, ''.join([mfnc_zcorr_out,'.csv']))
 np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr, fmt='%1.5f', delimiter='\t')
 # Save out only subset group
-mfnc_zcorr_outfile = os.path.join(datadir, ''.join([mfnc_zcorr_out,'_',group_name,'.csv']))
-np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr[subset,:], fmt='%1.5f', delimiter='\t')
+if subset:
+    mfnc_zcorr_outfile = os.path.join(datadir, ''.join([mfnc_zcorr_out,'_',group_name,'.csv']))
+    np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr[subset,:], fmt='%1.5f', delimiter='\t')
 
 ## Run group analysis
 #######################
 exists, resultsdir = gu.make_dir(datadir,'randomise') 
-resultsglob = os.path.join(datadir, ''.join(['mfnc_zcorr_','*',group_name,'.csv']))
+if subset:
+    resultsglob = os.path.join(datadir, ''.join(['mfnc_zcorr_','*',group_name,'.csv']))
+else:
+    resultsglob = os.path.join(datadir, ''.join(['mfnc_zcorr_','*','.csv']))
 result_files = glob(resultsglob)
 for mfnc_data_file in result_files:
     mfnc_data = np.genfromtxt(mfnc_data_file, names=None, dtype=float, delimiter=None)
