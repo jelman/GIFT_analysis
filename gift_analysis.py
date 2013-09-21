@@ -33,7 +33,7 @@ def randomise(infile, outname, design_file, contrast_file):
         one file per contrast  (ex. *vox_corrp_tstat1.nii.gz)
     """
          
-    cmd = ' '.join(['randomise -i %s'%(infile),
+    cmd = ' '.join(['randomise_parallel -i %s'%(infile),
                     '-o %s'%(outname),
                     '-d %s'%(design_file),
                     '-t %s'%(contrast_file),
