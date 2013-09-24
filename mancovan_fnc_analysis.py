@@ -36,11 +36,11 @@ if __name__ == '__main__':
     mfnc_zcorr = go.get_mfnc_stats(infile)
     # Save out text files of correlation and lags
     mfnc_zcorr_outfile = os.path.join(datadir, ''.join([mfnc_zcorr_out,'.csv']))
-    np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr, fmt='%1.5f', delimiter='\t')
+    np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr, fmt='%1.5f', delimiter=',')
     # Save out only subset group
     if subset:
         mfnc_zcorr_outfile = os.path.join(datadir, ''.join([mfnc_zcorr_out,'_',group_name,'.csv']))
-        np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr[subset,:], fmt='%1.5f', delimiter='\t')
+        np.savetxt(mfnc_zcorr_outfile, mfnc_zcorr[subset,:], fmt='%1.5f', delimiter=',')
 
     ## Run group analysis
     #######################
@@ -75,5 +75,5 @@ if __name__ == '__main__':
             np.savetxt(outfile, 
                         fdr_results[conname], 
                         fmt='%1.5f', 
-                        delimiter='\t')  
+                        delimiter=',')  
             print('Saved corrected output to %s'%(outfile))  
