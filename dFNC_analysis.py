@@ -68,7 +68,7 @@ if __name__ == '__main__':
         resultsglob = os.path.join(datadir, ''.join(['dFNC_','*','.csv']))
     result_files = glob(resultsglob)
     for dfnc_data_file in result_files:
-        dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=None)
+        dfnc_data = np.genfromtxt(dfnc_data_file, names=None, dtype=float, delimiter=',')
         pth, fname, ext = gu.split_filename(dfnc_data_file)
         dfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
         dfnc_saveimg = gu.save_img(dfnc_data, dfnc_img_fname)

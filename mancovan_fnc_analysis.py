@@ -51,7 +51,7 @@ if __name__ == '__main__':
         resultsglob = os.path.join(datadir, ''.join(['mfnc_zcorr_','*','.csv']))
     result_files = glob(resultsglob)
     for mfnc_data_file in result_files:
-        mfnc_data = np.genfromtxt(mfnc_data_file, names=None, dtype=float, delimiter=None)
+        mfnc_data = np.genfromtxt(mfnc_data_file, names=None, dtype=float, delimiter=',')
         pth, fname, ext = gu.split_filename(mfnc_data_file)
         mfnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
         mfnc_saveimg = gu.save_img(mfnc_data, mfnc_img_fname)

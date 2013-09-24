@@ -60,7 +60,7 @@ if __name__ == '__main__':
         resultsglob = os.path.join(datadir, ''.join(['FNCtb_','*','.csv']))
     result_files = glob(resultsglob)
     for fnc_data_file in result_files:
-        fnc_data = np.genfromtxt(fnc_data_file, names=None, dtype=float, delimiter=None)
+        fnc_data = np.genfromtxt(fnc_data_file, names=None, dtype=float, delimiter=',')
         pth, fname, ext = gu.split_filename(fnc_data_file)
         fnc_img_fname = os.path.join(resultsdir, fname + '.nii.gz')
         fnc_saveimg = gu.save_img(fnc_data, fnc_img_fname)
