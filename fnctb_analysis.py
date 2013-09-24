@@ -37,19 +37,19 @@ if __name__ == '__main__':
     fnc_corr, fnc_corr_z, fnc_lag = go.get_fnctb_stats(infile)
     # Save out text files of correlation and lags
     fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'.csv']))
-    np.savetxt(fnc_corr_outfile, fnc_corr, fmt='%1.5f', delimiter='\t')
+    np.savetxt(fnc_corr_outfile, fnc_corr, fmt='%1.5f', delimiter=',')
     fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'.csv']))
-    np.savetxt(fnc_corr_z_outfile, fnc_corr_z, fmt='%1.5f', delimiter='\t')
+    np.savetxt(fnc_corr_z_outfile, fnc_corr_z, fmt='%1.5f', delimiter=',')
     fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'.csv']))
-    np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter='\t')
+    np.savetxt(fnc_lag_outfile, fnc_lag, fmt='%1.2f', delimiter=',')
     # Save out only subset group
     if subset:
         fnc_corr_outfile = os.path.join(datadir, ''.join([fnc_corr_out,'_',group_name,'.csv']))
-        np.savetxt(fnc_corr_outfile, fnc_corr[subset,:], fmt='%1.5f', delimiter='\t')
+        np.savetxt(fnc_corr_outfile, fnc_corr[subset,:], fmt='%1.5f', delimiter=',')
         fnc_corr_z_outfile = os.path.join(datadir, ''.join([fnc_corr_z_out,'_',group_name,'.csv']))
-        np.savetxt(fnc_corr_z_outfile, fnc_corr_z[subset,:], fmt='%1.5f', delimiter='\t')
+        np.savetxt(fnc_corr_z_outfile, fnc_corr_z[subset,:], fmt='%1.5f', delimiter=',')
         fnc_lag_outfile = os.path.join(datadir, ''.join([fnc_lag_out,'_',group_name,'.csv']))
-        np.savetxt(fnc_lag_outfile, fnc_lag[subset,:], fmt='%1.2f', delimiter='\t')
+        np.savetxt(fnc_lag_outfile, fnc_lag[subset,:], fmt='%1.2f', delimiter=',')
 
     ## Run group analysis
     #######################

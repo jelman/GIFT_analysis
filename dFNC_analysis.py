@@ -49,13 +49,13 @@ if __name__ == '__main__':
             # Save all subjects
             outname = '_'.join(['dFNC', measure_name, stat_name]) + '.csv'
             outfile = os.path.join(datadir, outname)
-            np.savetxt(outfile, allsub_array, fmt='%1.5f', delimiter='\t')
+            np.savetxt(outfile, allsub_array, fmt='%1.5f', delimiter=',')
             # Save only subset of subjects
             if subset:
                 subset_array = allsub_array[subset,:]
                 outname = '_'.join(['dFNC', measure_name, stat_name, group_name]) + '.csv'
                 outfile = os.path.join(datadir, outname)
-                np.savetxt(outfile, subset_array, fmt='%1.5f', delimiter='\t')
+                np.savetxt(outfile, subset_array, fmt='%1.5f', delimiter=',')
             
             
 
