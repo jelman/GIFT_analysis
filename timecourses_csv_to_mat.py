@@ -24,10 +24,10 @@ def main(infiles, outname, nnodes, ntps, nsubs, tc_subset=False):
 
             
 if __name__ == '__main__':
-"""
-Takes a list of timecourses saved as csv files and combines them in a mat file 
-of shape Nsubjects x Ntimepoints x Nnodes. This mat may be used as input to dFNC
-"""
+    """
+    Takes a list of timecourses saved as csv files and combines them in a mat file 
+    of shape Nsubjects x Ntimepoints x Nnodes. This mat may be used as input to dFNC
+    """
 
     ###################### Set parameters #############################
     datadir = '/home/jagust/rsfmri_ica/CPAC/connectivity/timecourses/Greicius_90_rois'
